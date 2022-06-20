@@ -152,6 +152,13 @@ Parameters:
     Type: Number
     Default: 90
     Description: Number of days that the flow-log log group is retained for the development VPC.
+  CreateProdVPC:
+    Type: String
+    Default: 'No'
+    AllowedValues:
+      - 'No'
+      - 'Yes'
+    Description: Chose to create production VPC or not.
   ProdVPCCIDRBlock:
     Type: String
     Default: 172.17.0.0/16
@@ -239,8 +246,10 @@ Parameters:
     Type: String
 Conditions:
   UsingDefaultBucket: !Equals [!Ref QSS3BucketName, 'aws-quickstart']
+  CreateProd: !Equals [!Ref CreateProdVPC, 'Yes']
 Resources:
   ConfigStack:
+    Condition: CreateProd
     Type: 'AWS::CloudFormation::Stack'
     Properties:
       TemplateURL: 
@@ -257,6 +266,7 @@ Resources:
         QSS3BucketName: !Ref QSS3BucketName
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
   LogStack:
+    Condition: CreateProd
     Type: 'AWS::CloudFormation::Stack'
     DependsOn: ConfigStack
     Properties:
@@ -274,6 +284,7 @@ Resources:
         LifecycleTransitionGlacierDays: !Ref LifecycleTransitionGlacierDays
         CloudTrailLogRetentionDays: !Ref CloudTrailLogRetentionDays
   DevStack:
+    Condition: CreateProd
     Type: 'AWS::CloudFormation::Stack'
     DependsOn: [ ConfigStack, LogStack, MgmtStack ]
     Properties:
@@ -290,6 +301,7 @@ Resources:
         DevVPCSubnet2: !Ref DevVPCSubnet2
         DevVPCFlowLogLogGroupRetention: !Ref DevVPCFlowLogLogGroupRetention
   ProdStack:
+    Condition: CreateProd
     Type: 'AWS::CloudFormation::Stack'
     DependsOn: [ ConfigStack, LogStack, MgmtStack ]
     Properties:
@@ -306,6 +318,7 @@ Resources:
         ProdVPCSubnet2: !Ref ProdVPCSubnet2
         ProdVPCFlowLogLogGroupRetention: !Ref ProdVPCFlowLogLogGroupRetention
   MgmtStack:
+    Condition: CreateProd
     Type: 'AWS::CloudFormation::Stack'
     DependsOn: [ ConfigStack, LogStack ]
     Properties:
@@ -324,6 +337,7 @@ Resources:
         MgmtVPCPrivateSubnet2: !Ref MgmtVPCPrivateSubnet2
         MgmtVPCFlowLogLogGroupRetention: !Ref MgmtVPCFlowLogLogGroupRetention
   TgwStack:
+    Condition: CreateProd
     Type: 'AWS::CloudFormation::Stack'
     Properties:
       TemplateURL: 
