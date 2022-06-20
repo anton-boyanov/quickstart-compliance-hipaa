@@ -160,22 +160,18 @@ Parameters:
       - 'Yes'
     Description: Chose to create production VPC or not.
   ProdVPCCIDRBlock:
-    Condition: CreateProd
     Type: String
     Default: 172.17.0.0/16
     Description: CIDR block for the production VPC.
   ProdVPCSubnet1:
-    Condition: CreateProd
     Type: String
     Default: 172.17.11.0/24
     Description: CIDR block for subnet 1 in the production VPC.
   ProdVPCSubnet2:
-    Condition: CreateProd
     Type: String
     Default: 172.17.12.0/24
     Description: CIDR block for subnet 2 in the production VPC.
   ProdVPCFlowLogLogGroupRetention:
-    Condition: CreateProd
     Type: Number
     Default: 90
     Description: Number of days that the flow-log log group is retained for the production VPC.
